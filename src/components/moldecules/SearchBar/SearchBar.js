@@ -28,10 +28,11 @@ const SearchBar = () => {
             />
 
             <WrapperSearchAnswersList>
-                {symbols.length !== 0 &&
-                    symbols.map((item) => (
+                {symbols !== undefined &&
+                    symbols.length !== 0 &&
+                    symbols.map((item, index) => (
                         <SearchAnswersList
-                            key={item["2. symbol"]}
+                            key={index}
                             onClick={() =>
                                 handleClickSearch(item["1. symbol"])
                             }>
