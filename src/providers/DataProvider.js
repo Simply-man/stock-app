@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 
 export const DataContext = React.createContext({
     symbols: [],
     companyName: "",
+    companyInfo: {},
     handleInputChange: () => {},
     handleClickSearch: () => {},
 });
@@ -11,9 +13,15 @@ const DataProvider = ({ children }) => {
     const [companyName, setCompanyName] = useState("");
     const [symbols, setSymbols] = useState([]);
     const [searchedSymbol, setSearchedSymbol] = useState("");
+    const [companyInfo, setCompanyInfo] = useState({});
+    const history = useHistory();
 
     useEffect(() => {
-        if (!companyName) return;
+        if (companyName === "") {
+            setSymbols([]);
+            return;
+        }
+        if (companyName.length < 3) return;
         fetch(
             `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${companyName}&apikey=${process.env.REACT_APP_API_KEY}`
         )
@@ -23,12 +31,16 @@ const DataProvider = ({ children }) => {
     }, [companyName]);
 
     useEffect(() => {
+        if (symbols === undefined) setSymbols([]);
+    }, [symbols]);
+
+    useEffect(() => {
         if (!searchedSymbol) return;
         fetch(
             `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${searchedSymbol}&apikey=${process.env.REACT_APP_API_KEY}`
         )
             .then((response) => response.json())
-            .then((data) => console.log(data))
+            .then((data) => setCompanyInfo(data))
             .catch((err) => console.log(err));
     }, [searchedSymbol]);
 
@@ -37,6 +49,8 @@ const DataProvider = ({ children }) => {
     };
 
     const handleClickSearch = (value) => {
+        history.push(`/company/${value}`);
+        if (history.location !== "/") setSymbols([]);
         setSearchedSymbol(value);
     };
 
@@ -45,6 +59,7 @@ const DataProvider = ({ children }) => {
             value={{
                 companyName,
                 symbols,
+                companyInfo,
                 handleInputChange,
                 handleClickSearch,
             }}>
