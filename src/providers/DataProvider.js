@@ -5,12 +5,14 @@ export const DataContext = React.createContext({
     symbols: [],
     companyName: "",
     companyInfo: {},
+    isLoading: true,
     handleInputChange: () => {},
     handleClickSearch: () => {},
 });
 
 const DataProvider = ({ children }) => {
     const [companyName, setCompanyName] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
     const [symbols, setSymbols] = useState([]);
     const [searchedSymbol, setSearchedSymbol] = useState("");
     const [companyInfo, setCompanyInfo] = useState({});
@@ -36,11 +38,15 @@ const DataProvider = ({ children }) => {
 
     useEffect(() => {
         if (!searchedSymbol) return;
+        setIsLoading(true);
         fetch(
             `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${searchedSymbol}&apikey=${process.env.REACT_APP_API_KEY}`
         )
             .then((response) => response.json())
-            .then((data) => setCompanyInfo(data))
+            .then((data) => {
+                setIsLoading(false);
+                setCompanyInfo(data);
+            })
             .catch((err) => console.log(err));
     }, [searchedSymbol]);
 
@@ -58,6 +64,7 @@ const DataProvider = ({ children }) => {
         <DataContext.Provider
             value={{
                 companyName,
+                isLoading,
                 symbols,
                 companyInfo,
                 handleInputChange,
