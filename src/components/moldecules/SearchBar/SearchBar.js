@@ -4,7 +4,7 @@ import {
     Wrapper,
     WrapperSearchAnswersList,
     SearchAnswersList,
-} from "./SearchBar.styled";
+} from "./SearchBar.styles";
 import { Input } from "../../atoms/Input/Input";
 import Span from "../../atoms/Span/Span";
 
